@@ -215,11 +215,13 @@ def serialize_problem(db: Session, p: Problem, viewer: User | None, detail: bool
                     ],
                 }
             )
-    data["feedback"] = [
-        {"satisfaction": f.satisfaction, "resolved": f.resolved, "comments": f.comments}
-        for f in db.query(CitizenFeedback).filter(CitizenFeedback.problem_id == p.id).all()
-        if viewer and (viewer.id == p.citizen_id or is_gov(viewer))
-    ]
+    if viewer and (viewer.id == p.citizen_id or is_gov(viewer)):
+        data["feedback"] = [
+            {"satisfaction": f.satisfaction, "resolved": f.resolved, "comments": f.comments}
+            for f in db.query(CitizenFeedback).filter(CitizenFeedback.problem_id == p.id).all()
+        ]
+    else:
+        data["feedback"] = []
     return data
 
 

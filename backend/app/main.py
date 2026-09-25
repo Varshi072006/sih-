@@ -19,6 +19,7 @@ from app.api.public import router as public_router
 from app.api.files import router as files_router
 from app.api.ai import router as ai_router
 from app.api.assistant import router as assistant_router
+from app.api.ws import socket_app, start_broadcast_loop
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 from seed.seed_data import seed_all
@@ -56,6 +57,7 @@ def startup():
         seed_all(db)
     finally:
         db.close()
+    start_broadcast_loop()
 
 
 @app.get("/api/health")
@@ -75,3 +77,7 @@ app.include_router(public_router)
 app.include_router(files_router)
 app.include_router(ai_router)
 app.include_router(assistant_router)
+
+# Mount Socket.IO only when python-socketio is installed
+if socket_app is not None:
+    app.mount("/", socket_app)

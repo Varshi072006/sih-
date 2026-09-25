@@ -5,6 +5,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
 import { ErrorBox, Loading, inputClass } from "../../components/ui";
+import ImpactNetwork from "../../components/ImpactNetwork";
 
 const nav = [
   ["/admin/dashboard", "Overview"],
@@ -26,6 +27,11 @@ export function AdminDashboard() {
   return (
     <DashboardLayout title="Admin Portal" items={nav}>
       <div className="admin-dashboard"><section className="admin-hero"><div><p className="eyebrow text-gold">Platform operations</p><h2 className="mt-2 font-serif text-3xl text-white md:text-5xl">Keep public work moving.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-emerald-50/75">Review registrations, monitor problem workflows, and protect the platform’s record of accountable action.</p></div><div className="admin-hero-badge"><span>System status</span><strong>Operational</strong><small>All services responding</small></div></section><div className="admin-kpis">{Object.entries(d).map(([k, v]) => <div key={k}><span>{k.replaceAll("_", " ")}</span><strong>{v}</strong><small>Live platform metric</small></div>)}</div><div className="admin-quick-grid"><Link to="/admin/users" className="admin-quick-card"><span className="admin-quick-icon">01</span><div><strong>Review users</strong><p>Approve registrations and manage access.</p></div><span>→</span></Link><Link to="/admin/problems" className="admin-quick-card"><span className="admin-quick-icon admin-quick-icon-gold">02</span><div><strong>Inspect problems</strong><p>Track cases across the public workflow.</p></div><span>→</span></Link><Link to="/admin/audit-logs" className="admin-quick-card"><span className="admin-quick-icon admin-quick-icon-teal">03</span><div><strong>Audit activity</strong><p>Keep platform actions traceable.</p></div><span>→</span></Link></div></div>
+    
+      <div className="mt-8">
+        <div className="mb-4"><p className="eyebrow text-forest-700">Platform network</p><h2 className="font-serif text-2xl text-ink">Live collaboration graph</h2></div>
+        <ImpactNetwork compact />
+      </div>
     </DashboardLayout>
   );
 }

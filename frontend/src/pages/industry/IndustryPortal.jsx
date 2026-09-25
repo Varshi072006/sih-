@@ -4,6 +4,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
 import { ErrorBox, Field, Loading, StatusBadge, inputClass } from "../../components/ui";
+import ImpactNetwork from "../../components/ImpactNetwork";
 
 const nav = [
   ["/industry/dashboard", "Overview"],
@@ -26,6 +27,10 @@ export function IndustryDashboard() {
         <section className="partner-hero"><div><p className="eyebrow text-gold">Industry partner cockpit</p><h1 className="mt-2 font-serif text-3xl text-white md:text-5xl">{me.company_name}</h1><p className="mt-3 text-sm text-emerald-50/75">{me.organization_type} <span className="mx-1 text-white/30">/</span> {me.sector}</p><p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/70">Participation is optional. Your expertise can accelerate solutions without ever blocking a government-led problem workflow.</p></div><Link to="/industry/problems" className="cta-primary shrink-0">Explore opportunities <span aria-hidden="true">→</span></Link></section>
         <div className="partner-kpis"><div><span>Open opportunities</span><strong>—</strong><small>Browse available problems</small></div><div><span>My collaborations</span><strong>{collab.length}</strong><small>Active participation records</small></div><div><span>Capabilities</span><strong>{me.capabilities?.length || 0}</strong><small>Declared delivery strengths</small></div></div>
         <div className="partner-grid"><section className="partner-panel"><div className="partner-section-heading"><div><p className="eyebrow text-forest-700">Active relationships</p><h2 className="font-serif text-2xl text-ink">My collaborations</h2></div><Link to="/industry/problems" className="text-sm font-semibold text-forest-700">Find more →</Link></div>{collab.length ? <div className="space-y-3">{collab.map((c) => <article key={c.id} className="collaboration-card"><div className="partner-mark">{c.title?.slice(0, 1) || "C"}</div><div className="min-w-0 flex-1"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{c.problem_id}</p><h3 className="mt-1 truncate font-semibold text-forest-900">{c.title}</h3><div className="mt-2 flex flex-wrap gap-2">{c.types.split(",").map((type) => <span className="capability-chip" key={type}>{type}</span>)}<span className="capability-chip capability-chip-status">{c.status}</span></div></div></article>)}</div> : <div className="partner-empty">No collaborations yet. Browse available problems to find a good fit.</div>}</section><aside className="partner-panel"><p className="eyebrow text-forest-700">Your capabilities</p><h2 className="mt-1 font-serif text-2xl text-ink">What you bring</h2><div className="mt-5 flex flex-wrap gap-2">{(me.capabilities || []).map((capability) => <span className="capability-chip" key={capability}>{capability}</span>)}</div><p className="mt-5 text-sm leading-6 text-slate-500">Keep your capabilities visible so government teams can understand how you may contribute.</p></aside></div>
+        <div className="mt-8">
+          <div className="mb-4"><p className="eyebrow text-forest-700">Platform network</p><h2 className="font-serif text-2xl text-ink">Live collaboration graph</h2><p className="mt-1 text-sm text-slate-500">See how problems connect to universities and industries across Jharkhand.</p></div>
+          <ImpactNetwork compact />
+        </div>
       </div>
     </DashboardLayout>
   );

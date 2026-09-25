@@ -4,6 +4,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
 import { ErrorBox, Field, Loading, StatusBadge, inputClass } from "../../components/ui";
+import ImpactNetwork from "../../components/ImpactNetwork";
 
 const nav = [
   ["/university/dashboard", "Overview"],
@@ -65,6 +66,10 @@ export function UniversityDashboard() {
               {problems.recommended.length === 0 && <EmptyState title="No recommendations yet" text="New challenges matched to your research areas will appear here." />}
             </div>
           </section>
+          <div>
+            <div className="mb-4"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-forest-600">Platform network</p><h2 className="font-serif text-2xl text-forest-950">Live collaboration graph</h2><p className="mt-1 text-sm text-slate-500">See how problems connect to universities and industries across Jharkhand.</p></div>
+            <ImpactNetwork compact />
+          </div>
         </div>
       )}
       {me && tab === "profile" && <ProfileView me={me} />}

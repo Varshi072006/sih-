@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../services/api";
+import ImpactNetwork from "../../components/ImpactNetwork";
 
 const steps = [
   "Submit Problem",
@@ -114,7 +115,15 @@ export default function HomePage() {
       </section>
 
       <section className="section-shell py-4">
-        <div className="rounded-[30px] border border-[#dfeae4] bg-white p-6 shadow-soft md:p-8">
+        <div className="mb-10 max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-forest-600">Collaboration network</p>
+          <h2 className="mt-2 font-serif text-3xl md:text-5xl text-forest-900">See who is solving what, together.</h2>
+          <p className="mt-3 text-slate-600">Every problem, university suggestion and industry collaboration — visualised as a living network. Hover any node to explore connections.</p>
+        </div>
+        <ImpactNetwork />
+      </section>
+
+      <section className="section-shell py-4">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="story-image min-h-[320px] rounded-[26px] border border-white/10 shadow-inner" />
             <div>
@@ -135,7 +144,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </div>
       </section>
 
       <section className="section-shell py-20">

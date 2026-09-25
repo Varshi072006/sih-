@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
@@ -28,6 +29,7 @@ from app.services.storage import save_upload
 from app.services.workflow import transition_status
 from app.utils.constants import ADMIN_ROLES, GOVERNMENT_ROLES, STATUS_LABELS
 from app.api.problems import serialize_problem, _get
+from app.api.ws import graph_event_bus
 
 router = APIRouter(prefix="/api/government", tags=["Government"])
 
@@ -119,6 +121,7 @@ def verify(problem_ref: str, payload: RemarksIn, request: Request, user: User = 
     _act(db, p, user, "verify", payload.remarks, ip, ua)
     NotificationService.notify_user(db, p.citizen_id, "problem", "Problem verified", f"{p.public_id} has been verified.", "problem", p.public_id)
     db.commit()
+    graph_event_bus.emit("PROBLEM_VERIFIED", {"problemId": p.public_id, "problemTitle": p.title, "actorRole": "Government"})
     return {"status": p.status, "status_label": STATUS_LABELS[p.status]}
 
 
@@ -161,6 +164,11 @@ def assign(problem_ref: str, payload: AssignIn, request: Request, user: User = D
     _act(db, p, user, "assign", payload.remarks, ip, ua)
     NotificationService.notify_user(db, p.citizen_id, "problem", "Department assigned", f"{p.public_id} assigned to {dept.name}", "problem", p.public_id)
     db.commit()
+    graph_event_bus.emit("DEPARTMENT_ASSIGNED", {
+        "problemId": p.public_id, "problemTitle": p.title,
+        "departmentId": f"DEPT-{dept.id}", "departmentName": dept.name,
+        "actorRole": "Government",
+    })
     return {"status": p.status, "department": dept.name}
 
 
@@ -222,7 +230,7 @@ def upload_solution(
             action_taken=action_taken,
             implementation_details=implementation_details,
             uploaded_by_id=user.id,
-            attachments_json=str(attachments),
+            attachments_json=json.dumps(attachments),
         )
     )
     sol.current_version = version
@@ -241,6 +249,10 @@ def upload_solution(
     NotificationService.notify_user(db, p.citizen_id, "problem", "Government action uploaded", f"Solution v{version} recorded for {p.public_id}", "problem", p.public_id)
     NotificationService.notify_role(db, "admin", "ai", "University recommendations ready", p.public_id, "problem", p.public_id)
     db.commit()
+    graph_event_bus.emit("SOLUTION_UPLOADED", {
+        "problemId": p.public_id, "problemTitle": p.title,
+        "version": version, "actorRole": "Government",
+    })
     return {"version": version, "status": p.status, "message": f"Government Solution v{version} saved. Previous versions were preserved."}
 
 
@@ -344,15 +356,13 @@ def done_solution(problem_ref: str, payload: RemarksIn, request: Request, user: 
     NotificationService.notify_user(db, p.citizen_id, "problem", "Solution marked done", f"{p.public_id} is available for optional industry participation.", "problem", p.public_id)
     for org in db.query(Industry).filter(Industry.verification_status.in_(["verified", "activated"])).all():
         NotificationService.notify_industry(
-            db,
-            org.id,
-            notification_type="problem",
+            db, org.id, notification_type="problem",
             title="Problem available for participation",
             message=f"{p.public_id} is open for optional industry collaboration.",
-            entity_type="problem",
-            entity_id=p.public_id,
+            entity_type="problem", entity_id=p.public_id,
         )
     db.commit()
+    graph_event_bus.emit("DONE_SOLUTION", {"problemId": p.public_id, "problemTitle": p.title, "actorRole": "Government"})
     return {"status": p.status, "message": "Solution marked complete and published to industry participation queue."}
 
 

@@ -4,6 +4,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
 import { DemoTag, StatusBadge, Loading, Empty, ErrorBox, Field, inputClass } from "../../components/ui";
+import ImpactNetwork from "../../components/ImpactNetwork";
 
 const nav = [
   ["/citizen/dashboard", "Overview"],
@@ -38,6 +39,10 @@ export default function CitizenDashboard() {
           <div className="citizen-kpis"><div><span>My problems</span><strong>{problems ? problems.length : "—"}</strong><small>Reports submitted by you</small></div><div><span>Unread notifications</span><strong>{notes.filter((n) => !n.read).length}</strong><small>Updates waiting for you</small></div><div><span>Account status</span><strong className="text-base capitalize">{user?.verification_status?.replaceAll("_", " ") || "—"}</strong><small>Identity and access</small></div></div>
           <div className="citizen-section-heading"><div><p className="eyebrow text-forest-700">Recent activity</p><h2 className="font-serif text-2xl text-ink">My problems</h2></div><Link className="text-sm font-semibold text-forest-700 hover:text-clay" to="/citizen/dashboard?tab=problems">View all →</Link></div>
           <ProblemList problems={problems} />
+          <div className="mt-10">
+            <div className="mb-4"><p className="eyebrow text-forest-700">Platform network</p><h2 className="font-serif text-2xl text-ink">Live collaboration graph</h2><p className="mt-1 text-sm text-slate-500">See how problems connect to universities and industries across Jharkhand.</p></div>
+            <ImpactNetwork compact />
+          </div>
         </div>
       )}
       {tab === "profile" && user && (

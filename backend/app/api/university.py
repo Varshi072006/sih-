@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.api.problems import serialize_problem, _get
+from app.api.ws import graph_event_bus
 from app.database.session import get_db
 from app.models import (
     AIUniversityRecommendation,
@@ -95,7 +96,7 @@ def problems(user: User = Depends(_uni_user), db: Session = Depends(get_db)):
     return {
         "recommended": [serialize_problem(db, p, user) for p in recommended],
         "available": [serialize_problem(db, p, user) for p in available],
-        "for_review": [serialize_problem(db, p, user) for p in recommended or available],
+        "for_review": [serialize_problem(db, p, user) for p in (recommended if recommended else available)],
     }
 
 
@@ -206,6 +207,11 @@ def opinion(
         )
     AuditLogService.log(db, "SUBMIT_OPINION", "university_opinion", str(rec.id), user, details=p.public_id)
     db.commit()
+    graph_event_bus.emit("UNIVERSITY_SUGGESTION", {
+        "problemId": p.public_id, "problemTitle": p.title,
+        "universityId": f"UNI-{uni.id}", "universityName": uni.name,
+        "actorRole": "University",
+    })
     return {"id": rec.id, "status": p.status}
 
 

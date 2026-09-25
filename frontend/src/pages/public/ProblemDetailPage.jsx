@@ -4,6 +4,7 @@ import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { api } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { DemoTag, ErrorBox, Loading, StatusBadge } from "../../components/ui";
+import ImpactNetwork from "../../components/ImpactNetwork";
 import L from "leaflet";
 
 const icon = new L.Icon({
@@ -99,7 +100,19 @@ export default function ProblemDetailPage() {
         </section>
       )}
       <section className="dossier-card">
-        <div className="dossier-section-title"><div><p className="eyebrow text-forest-700">Traceable progress</p><h2 className="mt-1 font-serif text-2xl text-ink">Timeline</h2></div><span className="dossier-icon">03</span></div>
+        <div className="dossier-section-title">
+          <div>
+            <p className="eyebrow text-forest-700">Live network</p>
+            <h2 className="mt-1 font-serif text-2xl text-ink">Collaboration Graph</h2>
+          </div>
+          <span className="dossier-icon">03</span>
+        </div>
+        <div className="mt-4">
+          <ImpactNetwork compact problemId={p.public_id} />
+        </div>
+      </section>
+      <section className="dossier-card">
+        <div className="dossier-section-title"><div><p className="eyebrow text-forest-700">Traceable progress</p><h2 className="mt-1 font-serif text-2xl text-ink">Timeline</h2></div><span className="dossier-icon">04</span></div>
         <ol className="dossier-timeline">
           {(p.timeline || []).map((t) => (
             <li key={t.id}><span className="timeline-dot" /><div><div className="font-medium text-ink">{t.new_status}</div><div className="mt-1 text-sm leading-6 text-slate-500">{t.note || "Status recorded"} · {new Date(t.created_at).toLocaleDateString()}</div></div></li>

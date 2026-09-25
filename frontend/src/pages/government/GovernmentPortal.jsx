@@ -4,6 +4,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
 import { DemoTag, ErrorBox, Field, Loading, StatusBadge, inputClass } from "../../components/ui";
+import ImpactNetwork from "../../components/ImpactNetwork";
 
 const nav = [
   ["/government/dashboard", "Overview"],
@@ -37,6 +38,10 @@ export function GovernmentDashboard() {
       <div className="grid md:grid-cols-2 gap-4 mt-6">
         <div className="bg-white border p-4 rounded"><h2 className="font-medium mb-2">District-wise</h2>{Object.entries(d.districts || {}).map(([k, v]) => <p key={k}>{k}: {v}</p>)}</div>
         <div className="bg-white border p-4 rounded"><h2 className="font-medium mb-2">Department-wise</h2>{Object.entries(d.departments || {}).map(([k, v]) => <p key={k}>{k}: {v}</p>)}</div>
+      </div>
+      <div className="mt-8">
+        <div className="mb-4"><p className="eyebrow text-forest-700">Platform network</p><h2 className="font-serif text-2xl text-ink">Live collaboration graph</h2></div>
+        <ImpactNetwork compact />
       </div>
     </DashboardLayout>
   );

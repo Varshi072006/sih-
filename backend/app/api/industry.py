@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.problems import serialize_problem, _get
+from app.api.ws import graph_event_bus
 from app.database.session import get_db
 from app.models import Industry, IndustryParticipation, IndustryProposal, Problem, User
 from app.schemas import ParticipateIn, ProposalIn
@@ -112,6 +113,11 @@ def participate(problem_ref: str, payload: ParticipateIn, user: User = Depends(_
     )
     AuditLogService.log(db, "PARTICIPATE", "industry_participation", p.public_id, user, details=",".join(types))
     db.commit()
+    graph_event_bus.emit("INDUSTRY_INTEREST", {
+        "problemId": p.public_id, "problemTitle": p.title,
+        "industryId": f"IND-{org.id}", "industryName": org.company_name,
+        "participationTypes": types, "actorRole": "Industry",
+    })
     return {"id": rec.id, "status": rec.status, "message": "Participation recorded. This does not block government workflow."}
 
 
@@ -146,6 +152,11 @@ def proposal(problem_ref: str, payload: ProposalIn, user: User = Depends(_org_us
     NotificationService.notify_role(db, "admin", "industry", "Industry proposal", f"{org.company_name} / {p.public_id}", "problem", p.public_id)
     AuditLogService.log(db, "CREATE", "industry_proposal", p.public_id, user)
     db.commit()
+    graph_event_bus.emit("INDUSTRY_PROPOSAL", {
+        "problemId": p.public_id, "problemTitle": p.title,
+        "industryId": f"IND-{org.id}", "industryName": org.company_name,
+        "actorRole": "Industry",
+    })
     return {"id": rec.id, "review_status": rec.review_status}
 
 
