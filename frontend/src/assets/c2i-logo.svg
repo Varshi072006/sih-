@@ -1,0 +1,24 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="20" y1="18" x2="142" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7F8F1"/>
+      <stop offset="1" stop-color="#C7F0D7"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="26" y1="28" x2="133" y2="131" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#14532D"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="50" y1="40" x2="110" y2="118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8D77B"/>
+      <stop offset="1" stop-color="#D9A441"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="140" height="140" rx="28" fill="url(#bg)"/>
+  <circle cx="80" cy="80" r="52" fill="url(#ring)" fill-opacity="0.08"/>
+  <path d="M54 58C54 52.4772 58.4772 48 64 48H96C101.523 48 106 52.4772 106 58V60H54V58Z" fill="url(#gold)"/>
+  <path d="M47 75C47 66.1634 54.1634 59 63 59H97C105.837 59 113 66.1634 113 75V90C113 98.8366 105.837 106 97 106H63C54.1634 106 47 98.8366 47 90V75Z" fill="url(#ring)"/>
+  <path d="M72 55L86 70L72 85L58 70L72 55Z" fill="url(#gold)"/>
+  <path d="M126 46L98 91H132L126 46Z" fill="#0F766E" fill-opacity="0.15"/>
+  <path d="M39 89C45.5 81.5 57 84 61 91C64.5 96.5 66 101 71 101C77 101 79.5 95.5 83 90.5C87 84.5 94 80 101 84C109 88.5 113 96.5 115 103.5V112H39V89Z" fill="#0F766E" fill-opacity="0.12"/>
+  <path d="M58 110H102" stroke="#0F172A" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+</svg>
