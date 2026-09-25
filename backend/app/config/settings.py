@@ -25,5 +25,18 @@ class Settings(BaseSettings):
     MAX_UPLOAD_MB: int = 25
     ALGORITHM: str = "HS256"
 
+    # Aadhaar Identity Verification Settings
+    AADHAAR_PROVIDER: str = "mock"  # "mock" or "authorized"
+    DEMO_AADHAAR_OTP: str = "123456"
+    AADHAAR_OTP_EXPIRY_SECONDS: int = 180
+    AADHAAR_MAX_OTP_ATTEMPTS: int = 5
+    AADHAAR_MAX_RESEND_ATTEMPTS: int = 3
+    AADHAAR_RESEND_COOLDOWN_SECONDS: int = 30
+    AADHAAR_TOKEN_SALT: str = "jharkhand-c2i-aadhaar-salt-secure"
+    AADHAAR_API_URL: str = ""
+    AADHAAR_API_KEY: str = ""
+    AADHAAR_CLIENT_ID: str = ""
+    AADHAAR_CLIENT_SECRET: str = ""
+
 
 settings = Settings()

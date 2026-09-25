@@ -6,7 +6,7 @@ import { ErrorBox, Field, inputClass } from "../../components/ui";
 
 export default function CitizenRegisterPage() {
   const [lookups, setLookups] = useState({ districts: [] });
-  const [form, setForm] = useState({ full_name: "", email: "", mobile: "", password: "", confirm_password: "", district: "Ranchi", block: "", village: "", address: "" });
+  const [form, setForm] = useState({ full_name: "", email: "", mobile: "", password: "", confirm_password: "", district: "Ranchi", block: "", village: "", address: "", aadhaar: "" });
   const [err, setErr] = useState("");
   const [step, setStep] = useState("form");
   const { login } = useAuth();
@@ -59,6 +59,21 @@ export default function CitizenRegisterPage() {
           </Field>
           </div>
           <Field label={labels.address}><input className={inputClass()} type="text" value={form.address} onChange={(e) => set("address", e.target.value)} /></Field>
+          <div className="form-section-title mt-5"><span>03</span><div><strong>Identity</strong><small>Aadhaar number for verification</small></div></div>
+          <Field label="Aadhaar number">
+            <input
+              className={inputClass()}
+              type="text"
+              inputMode="numeric"
+              maxLength={14}
+              placeholder="XXXX XXXX XXXX"
+              value={form.aadhaar}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "").slice(0, 12);
+                set("aadhaar", digits.replace(/(\d{4})(?=\d)/g, "$1 "));
+              }}
+            />
+          </Field>
           <button className="cta-primary mt-3 w-full">Create citizen account <span aria-hidden="true">→</span></button>
           <p className="mt-4 text-center text-xs leading-5 text-slate-500">By continuing, you agree to provide accurate information for public-interest reporting.</p>
         </form>

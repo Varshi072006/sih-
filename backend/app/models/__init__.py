@@ -43,6 +43,11 @@ class User(Base, TimestampMixin):
     mobile: Mapped[str] = mapped_column(String(20), default="")
     primary_role: Mapped[str] = mapped_column(String(64), index=True)
     verification_status: Mapped[str] = mapped_column(String(64), default="pending_verification", index=True)
+    account_status: Mapped[str] = mapped_column(String(64), default="active")
+    aadhaar_verification_status: Mapped[str] = mapped_column(String(64), default="not_verified")
+    aadhaar_verification_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    dob: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    gender: Mapped[str | None] = mapped_column(String(16), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -129,6 +134,8 @@ class University(Base, TimestampMixin):
     technologies: Mapped[str] = mapped_column(Text, default="")
     verification_status: Mapped[str] = mapped_column(String(64), default="pending_verification")
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
+    state_id: Mapped[int | None] = mapped_column(ForeignKey("states.id"), nullable=True)
+    institution_catalog_id: Mapped[int | None] = mapped_column(ForeignKey("institution_catalog.id"), nullable=True)
     user: Mapped[User] = relationship(back_populates="university")
     departments: Mapped[list[UniversityDepartment]] = relationship(back_populates="university", cascade="all, delete-orphan")
     documents: Mapped[list[UniversityDocument]] = relationship(back_populates="university", cascade="all, delete-orphan")
@@ -602,6 +609,31 @@ class AuditLog(Base, TimestampMixin):
     details: Mapped[str] = mapped_column(Text, default="")
     ip_address: Mapped[str] = mapped_column(String(64), default="")
     user_agent: Mapped[str] = mapped_column(String(255), default="")
+
+
+class State(Base, TimestampMixin):
+    __tablename__ = "states"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    code: Mapped[str] = mapped_column(String(8), unique=True)
+    status: Mapped[str] = mapped_column(String(32), default="active")
+    institutions: Mapped[list[InstitutionCatalog]] = relationship(back_populates="state", cascade="all, delete-orphan")
+
+
+class InstitutionCatalog(Base, TimestampMixin):
+    __tablename__ = "institution_catalog"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    state_id: Mapped[int] = mapped_column(ForeignKey("states.id"), index=True)
+    name: Mapped[str] = mapped_column(String(255), index=True)
+    short_name: Mapped[str] = mapped_column(String(64), default="")
+    institution_type: Mapped[str] = mapped_column(String(128), default="University")
+    official_website: Mapped[str] = mapped_column(String(255), default="")
+    official_email: Mapped[str] = mapped_column(String(255), default="")
+    district: Mapped[str] = mapped_column(String(128), default="")
+    address: Mapped[str] = mapped_column(Text, default="")
+    verification_status: Mapped[str] = mapped_column(String(64), default="verified")
+    status: Mapped[str] = mapped_column(String(32), default="active")
+    state: Mapped[State] = relationship(back_populates="institutions")
 
 
 class StoredFile(Base, TimestampMixin):

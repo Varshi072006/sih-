@@ -17,6 +17,7 @@ from app.models import (
     IndustryCapability,
     IndustryParticipation,
     IndustryProposal,
+    InstitutionCatalog,
     Notification,
     Problem,
     ProblemEvidence,
@@ -26,6 +27,7 @@ from app.models import (
     ProjectMember,
     ProjectMilestone,
     Role,
+    State,
     Student,
     University,
     UniversityDepartment,
@@ -45,6 +47,37 @@ def seed_all(db: Session) -> None:
     if db.query(Role).count() == 0:
         for name in ROLES:
             db.add(Role(name=name, description=name.replace("_", " ").title()))
+        db.flush()
+
+    # Seed states and institution catalog
+    if db.query(State).count() == 0:
+        jh = State(name="Jharkhand", code="JH", status="active")
+        db.add(jh)
+        db.flush()
+        institutions = [
+            ("Birla Institute of Technology, Mesra", "BIT Mesra", "Deemed University", "Ranchi"),
+            ("Ranchi University", "RU", "State University", "Ranchi"),
+            ("Vinoba Bhave University", "VBU", "State University", "Hazaribagh"),
+            ("Kolhan University", "KU", "State University", "Chaibasa"),
+            ("Sido Kanhu Murmu University", "SKMU", "State University", "Dumka"),
+            ("Nilamber-Pitamber University", "NPU", "State University", "Palamu"),
+            ("Central University of Jharkhand", "CUJ", "Central University", "Ranchi"),
+            ("National University of Study and Research in Law", "NUSRL", "National University", "Ranchi"),
+            ("National Institute of Technology Jamshedpur", "NIT Jamshedpur", "NIT", "East Singhbhum"),
+            ("Indian Institute of Management Ranchi", "IIM Ranchi", "IIM", "Ranchi"),
+            ("Indian Institute of Information Technology Ranchi", "IIIT Ranchi", "IIIT", "Ranchi"),
+            ("Birsa Agricultural University", "BAU", "Agriculture University", "Ranchi"),
+            ("Jharkhand University of Technology", "JUT", "State University", "Ranchi"),
+            ("Jharkhand Raksha Shakti University", "JRSU", "State University", "Ranchi"),
+            ("National Institute of Foundry and Forge Technology", "NIFFT", "National Institute", "Ranchi"),
+            ("Other / Institution Not Listed", "OTHER", "Other", ""),
+        ]
+        for name, short, itype, district in institutions:
+            db.add(InstitutionCatalog(
+                state_id=jh.id, name=name, short_name=short,
+                institution_type=itype, district=district,
+                verification_status="verified", status="active",
+            ))
         db.flush()
 
     depts = [

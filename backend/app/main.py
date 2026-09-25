@@ -48,9 +48,30 @@ async def unhandled(_request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": "Server error"})
 
 
+def _migrate_sqlite():
+    migrations = [
+        "ALTER TABLE users ADD COLUMN account_status VARCHAR(32) DEFAULT 'active'",
+        "ALTER TABLE users ADD COLUMN aadhaar_verification_status VARCHAR(32)",
+        "ALTER TABLE users ADD COLUMN aadhaar_verification_id VARCHAR(128)",
+        "ALTER TABLE users ADD COLUMN dob VARCHAR(16)",
+        "ALTER TABLE users ADD COLUMN gender VARCHAR(16)",
+        "ALTER TABLE universities ADD COLUMN state_id INTEGER",
+        "ALTER TABLE universities ADD COLUMN institution_catalog_id INTEGER",
+    ]
+    import sqlalchemy
+    with engine.connect() as conn:
+        for sql in migrations:
+            try:
+                conn.execute(sqlalchemy.text(sql))
+                conn.commit()
+            except Exception:
+                pass
+
+
 @app.on_event("startup")
 def startup():
     Path(settings.UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
+    _migrate_sqlite()
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:

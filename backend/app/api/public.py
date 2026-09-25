@@ -2,10 +2,41 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-from app.models import ImpactMetric, Industry, Problem, Project, University
+from app.models import ImpactMetric, Industry, InstitutionCatalog, Problem, Project, State, University
 from app.utils.constants import CATEGORIES, STATUS_LABELS
 
 router = APIRouter(prefix="/api", tags=["Public & Analytics"])
+
+
+@router.get("/states")
+def get_states(db: Session = Depends(get_db)):
+    return [{"id": s.id, "name": s.name, "code": s.code} for s in db.query(State).filter(State.status == "active").order_by(State.name).all()]
+
+
+@router.get("/states/{state_id}/universities")
+def get_state_universities(state_id: int, db: Session = Depends(get_db)):
+    from fastapi import HTTPException
+    state = db.query(State).filter(State.id == state_id).first()
+    if not state:
+        raise HTTPException(404, "State not found")
+    rows = db.query(InstitutionCatalog).filter(
+        InstitutionCatalog.state_id == state_id,
+        InstitutionCatalog.status == "active",
+    ).order_by(InstitutionCatalog.name).all()
+    return [{"id": r.id, "name": r.name, "short_name": r.short_name, "institution_type": r.institution_type, "district": r.district, "verification_status": r.verification_status} for r in rows]
+
+
+@router.get("/universities/search")
+def search_universities(state: str = "", query: str = "", db: Session = Depends(get_db)):
+    q = db.query(InstitutionCatalog).filter(InstitutionCatalog.status == "active")
+    if state:
+        st = db.query(State).filter(State.code.ilike(state)).first()
+        if st:
+            q = q.filter(InstitutionCatalog.state_id == st.id)
+    if query:
+        q = q.filter(InstitutionCatalog.name.ilike(f"%{query}%"))
+    rows = q.order_by(InstitutionCatalog.name).all()
+    return [{"id": r.id, "name": r.name, "short_name": r.short_name, "institution_type": r.institution_type, "district": r.district} for r in rows]
 
 
 @router.get("/stats")

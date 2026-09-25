@@ -34,9 +34,12 @@ class CitizenRegisterIn(BaseModel):
     block: str = ""
     village: str = ""
     address: str = ""
+    aadhaar: str = ""
 
 
 class UniversityRegisterIn(BaseModel):
+    state_id: int
+    institution_catalog_id: int | None = None
     name: str
     institution_type: str = "University"
     official_id: str = ""

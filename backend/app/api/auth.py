@@ -12,7 +12,9 @@ from app.models import (
     GovernmentUser,
     Industry,
     IndustryCapability,
+    InstitutionCatalog,
     Role,
+    State,
     University,
     UniversityDepartment,
     User,
@@ -83,6 +85,7 @@ def register_citizen(payload: CitizenRegisterIn, request: Request, db: Session =
     if not _mobile_ok(payload.mobile):
         raise HTTPException(status_code=400, detail="Enter a valid 10-digit mobile number")
     _ensure_unique_email(db, payload.email)
+    aadhaar_digits = re.sub(r"\D", "", payload.aadhaar or "")
     user = User(
         email=payload.email.lower(),
         password_hash=hash_password(payload.password),
@@ -90,6 +93,7 @@ def register_citizen(payload: CitizenRegisterIn, request: Request, db: Session =
         mobile=payload.mobile,
         primary_role="citizen",
         verification_status="pending_verification",
+        aadhaar_verification_id=aadhaar_digits or None,
     )
     db.add(user)
     db.flush()
@@ -127,6 +131,19 @@ def register_university(payload: UniversityRegisterIn, request: Request, db: Ses
     _ensure_unique_email(db, payload.email)
     if not _password_ok(payload.password):
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters and include letters and numbers")
+    # Validate state exists
+    state = db.query(State).filter(State.id == payload.state_id).first()
+    if not state:
+        raise HTTPException(status_code=400, detail="Invalid state selected")
+    # Validate institution belongs to state (if a catalog entry was selected)
+    catalog_entry = None
+    if payload.institution_catalog_id:
+        catalog_entry = db.query(InstitutionCatalog).filter(
+            InstitutionCatalog.id == payload.institution_catalog_id,
+            InstitutionCatalog.state_id == payload.state_id,
+        ).first()
+        if not catalog_entry:
+            raise HTTPException(status_code=400, detail="Selected institution does not belong to the selected state")
     user = User(
         email=payload.email.lower(),
         password_hash=hash_password(payload.password),
@@ -155,6 +172,8 @@ def register_university(payload: UniversityRegisterIn, request: Request, db: Ses
         previous_projects=payload.previous_projects,
         technologies=payload.technologies,
         verification_status="pending_verification",
+        state_id=payload.state_id,
+        institution_catalog_id=payload.institution_catalog_id,
     )
     db.add(uni)
     db.flush()
