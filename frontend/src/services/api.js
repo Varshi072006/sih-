@@ -1,4 +1,4 @@
-const API = "";
+const API = import.meta.env.VITE_BACKEND_URL || "";
 
 export async function api(path, { method = "GET", body, token, form } = {}) {
   const headers = {};
